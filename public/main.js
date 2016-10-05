@@ -42,8 +42,17 @@ jQuery(function($){
 				html+=data[i]+'<br>'
 			}
 			$users.html(html);
+		}else{
+			$users.html('No user is online');
 		}
 		
+	})
+
+	socket.on('user_disconnected',function(data){
+		alert('user:'+data+' is disconneted');
+		$('#receiverName').val('');
+		('#contentWrap').hide();
+		$('#receiverWrap').show();
 	})
 
 	$messageForm.submit(function(e){

@@ -69,7 +69,10 @@ io.sockets.on('connection',function(socket){
 	socket.on('disconnect',function(data){
 		if(!socket.nickname)
 			return;
+		if(socket.receiver_name)
+			users[socket.receiver_name].emit('user_disconnected',socket.nickname);
 		delete users[socket.nickname]
+
 		updateNicknames();
 	})
 })
