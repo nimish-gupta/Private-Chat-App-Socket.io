@@ -38,16 +38,33 @@ io.sockets.on('connection',function(socket){
 		var msg=data.trim();
 		
 		socket.emit('new_message',[{msg:msg,nick:socket.nickname}]);
+		
+
+
+		if(!socket.msg)
+			socket.msg={}
+		if(!(socket.receiver_name in socket.msg))
+			socket.msg[socket.receiver_name]=[]
+		socket.msg[socket.receiver_name].push({msg:msg,nick:socket.nickname})
+		
+
+
+
+		if(!users[socket.receiver_name].msg)
+			users[socket.receiver_name].msg={}
+		if(!(socket.nickname in users[socket.receiver_name].msg))
+			users[socket.receiver_name].msg[socket.nickname]=[]
+		users[socket.receiver_name].msg[socket.nickname].push({msg:msg,nick:socket.nickname})
+
 		if(users[socket.receiver_name].receiver_name===socket.nickname){
 			console.log(socket.receiver_name);
 			users[socket.receiver_name].emit('new_message',[{msg:msg,nick:socket.nickname}]);
 		}else{
-			if(!users[socket.receiver_name].msg)
-				users[socket.receiver_name].msg={}
-			if(!(socket.nickname in users[socket.receiver_name].msg))
-				users[socket.receiver_name].msg[socket.nickname]=[]
-			users[socket.receiver_name].msg[socket.nickname].push({msg:msg,nick:socket.nickname})
-			
+			total_length=0;
+			console.log(users[socket.receiver_name].msg[socket.nickname].length-1)
+			for(var i=users[socket.receiver_name].msg[socket.nickname].length-1;i>=0 && users[socket.receiver_name].msg[socket.nickname][i].nick!==socket.receiver_name;i--)
+				total_length++;
+			users[socket.receiver_name].emit('notification',{from:socket.nickname,total:total_length});
 		}
 		
 
@@ -69,8 +86,11 @@ io.sockets.on('connection',function(socket){
 	socket.on('disconnect',function(data){
 		if(!socket.nickname)
 			return;
-		if(socket.receiver_name)
-			users[socket.receiver_name].emit('user_disconnected',socket.nickname);
+		for(user in users){
+			if(users[user].receiver_name===socket.nickname)
+				users[user].emit('user_disconnected',socket.nickname);
+		}
+		
 		delete users[socket.nickname]
 
 		updateNicknames();

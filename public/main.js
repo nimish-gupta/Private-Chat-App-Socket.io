@@ -21,11 +21,15 @@ jQuery(function($){
 	});
 	$('#setReceiver').submit(function(e){
 		e.preventDefault();
-		socket.emit('reciever_name',$('#receiverName').val(),function(data){
+		receive_emit($('#receiverName').val())
+		
+	});
+	function receive_emit(value){
+		socket.emit('reciever_name',value,function(data){
 			if(data===1){
 				$('#receiverWrap').hide();
 				$('#contentWrap').show();
-
+				$('.'+data.from).html(data)
 			}else if(data===2){
 				$('#receiverError').html('You can not send message to yourself. Sorry');
 			}
@@ -34,12 +38,20 @@ jQuery(function($){
 			}
 			$('#receiverName').val('');
 		});
-	});
+	}
+	$('#start_another_chat').click(function(){
+		$('#contentWrap').hide();
+		$('#chat').html('')
+		$('#receiverWrap').show();
+	})
+	socket.on('notification',function(data){
+		$('.'+data.from).html('<span class="from_'+data.from+'">'+data.from + '</span> <span> '+ data.total+'</span>' )
+	})
 	socket.on('usernames',function(data){
 		if(data.length!=0){
 			var html='Online users<br>';
 			for(i=0;i<data.length;i++){
-				html+=data[i]+'<br>'
+				html+='<span class='+data[i]+'>'+data[i]+'<span><br>'
 			}
 			$users.html(html);
 		}else{
@@ -51,7 +63,7 @@ jQuery(function($){
 	socket.on('user_disconnected',function(data){
 		alert('user:'+data+' is disconneted');
 		$('#receiverName').val('');
-		('#contentWrap').hide();
+		$('#contentWrap').hide();
 		$('#receiverWrap').show();
 	})
 
