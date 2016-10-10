@@ -1,3 +1,6 @@
-Private-Chat-App-Socket.io
+Private 1-1 chat app using socket.io and RabbitMQ and Node.js
 
-This is a chat app . To have a private chat Before sending a message add '/w name_of_receiver';
+In this project there are two sub projects one 
+1. Complete chat using only socket.io
+2.Another chat using socket.io and rabbit mq
+

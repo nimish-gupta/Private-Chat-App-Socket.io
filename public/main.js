@@ -45,7 +45,7 @@ jQuery(function($){
 		$('#receiverWrap').show();
 	})
 	socket.on('notification',function(data){
-		$('.'+data.from).html('<span class="from_'+data.from+'">'+data.from + '</span> <span> '+ data.total+'</span>' )
+		$('.'+data.from).html('<span class="from_'+data.from+'"> '+data.msg+' '+data.from + '</span> ' )
 	})
 	socket.on('usernames',function(data){
 		if(data.length!=0){
